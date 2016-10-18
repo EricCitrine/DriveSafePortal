@@ -21,7 +21,11 @@ namespace Telematics.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public System.Data.Entity.DbSet<Telematics.Models.Logs> Logs { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.Actions> Actions { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.GPSLocation> GPSLocation { get; set; }
         public System.Data.Entity.DbSet<Telematics.Models.Vehicle> Vehicle { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.OBD> OBD { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.DriverScore> DriverScore { get; set; }
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {

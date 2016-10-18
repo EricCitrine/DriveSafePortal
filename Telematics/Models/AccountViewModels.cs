@@ -151,6 +151,13 @@ namespace Telematics.Models
         public IList<Telematics.Models.Vehicle> vehicle_list { get; set; }
     }
 
+    public class DriverScore
+    {
+        public int id { get; set; }
+        public int driver_id { get; set; }
+        public int driver_score { get; set; }
+    }
+
     public class User
     {
         public IList<Telematics.Models.ApplicationUser> users { get; set; }
