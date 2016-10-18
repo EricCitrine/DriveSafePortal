@@ -264,6 +264,26 @@
     <Compile Include="Migrations\201610130610053_vehicle5.Designer.cs">
       <DependentUpon>201610130610053_vehicle5.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201610170306446_log.cs" />
+    <Compile Include="Migrations\201610170306446_log.Designer.cs">
+      <DependentUpon>201610170306446_log.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610170319398_log1.cs" />
+    <Compile Include="Migrations\201610170319398_log1.Designer.cs">
+      <DependentUpon>201610170319398_log1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610170719561_log2.cs" />
+    <Compile Include="Migrations\201610170719561_log2.Designer.cs">
+      <DependentUpon>201610170719561_log2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610170905209_log3.cs" />
+    <Compile Include="Migrations\201610170905209_log3.Designer.cs">
+      <DependentUpon>201610170905209_log3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201610180245289_driverscore.cs" />
+    <Compile Include="Migrations\201610180245289_driverscore.Designer.cs">
+      <DependentUpon>201610180245289_driverscore.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -411,6 +431,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201610130610053_vehicle5.resx">
       <DependentUpon>201610130610053_vehicle5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610170306446_log.resx">
+      <DependentUpon>201610170306446_log.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610170319398_log1.resx">
+      <DependentUpon>201610170319398_log1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610170719561_log2.resx">
+      <DependentUpon>201610170719561_log2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610170905209_log3.resx">
+      <DependentUpon>201610170905209_log3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201610180245289_driverscore.resx">
+      <DependentUpon>201610180245289_driverscore.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

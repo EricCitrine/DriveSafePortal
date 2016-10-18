@@ -25,6 +25,10 @@
                     <li class="@reportClass">
                         @Html.ActionLink(report.Name, "Report", new { reportId = report.Id })
                     </li>
+
+                    <li class="@reportClass">
+                        @Html.ActionLink("test", "Report", new { reportId = 123 })
+                    </li>
                 }
             </ul>
         </div>
