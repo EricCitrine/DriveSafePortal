@@ -86,14 +86,26 @@
     function locate() {
         document.getElementById('dvMap').appendChild('<button>abc</button>');
     }
+
+    function search() {
+        var table_html = '<table style="width:100%" border="1">';
+        for (i = 0 ; i < markersArray.length ; i++) {
+            if (markersArray[i].getTitle() == document.getElementById('v_no').value) {
+
+            }
+        }
+    }
 </script>
 
 <div class="side-body padding-top">
     <div class="row">
-        <div class="col-md-6" style="border:1px solid black;margin-bottom:10px;padding:10px 10px 10px 10px">
-            <h4>Find Vehicle</h4>
+        <div class="col-md-6" style="margin-bottom:10px">
+            <h3 style="background-color:#22A7F0;padding:10px 10px 10px 10px">Find Vehicle</h3>
             <label>Vehicle No.</label>
             <input type="text" name="v_no" id="v_no" onchange="findMarker()" style="padding:10px 10px 10px 10px" placeholder="License Number" />
+        </div>
+        <div id="resulttable" name="resulttable" class="col-md-6" style="margin-bottom:10px">
+            <h3 style="background-color:#00ff21;padding:10px 10px 10px 10px">Results</h3>
         </div>
     </div>
     <div id="wrapper" style="position:relative">
