@@ -298,6 +298,10 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\powerbi.css" />
+    <Content Include="css\style.css" />
+    <Content Include="css\themes.css" />
+    <Content Include="css\themes\flat-blue.css" />
+    <Content Include="css\themes\flat-green.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -317,6 +321,17 @@
     <Content Include="lib\css\font-awesome.min.css" />
     <Content Include="lib\css\jquery.dataTables.min.css" />
     <Content Include="lib\css\select2.min.css" />
+    <Content Include="lib\js\ace\ace.js" />
+    <Content Include="lib\js\ace\mode-html.js" />
+    <Content Include="lib\js\ace\theme-github.js" />
+    <Content Include="lib\js\bootstrap-switch.min.js" />
+    <Content Include="lib\js\bootstrap.min.js" />
+    <Content Include="lib\js\Chart.min.js" />
+    <Content Include="lib\js\dataTables.bootstrap.min.js" />
+    <Content Include="lib\js\jquery.dataTables.min.js" />
+    <Content Include="lib\js\jquery.matchHeight-min.js" />
+    <Content Include="lib\js\jquery.min.js" />
+    <Content Include="lib\js\select2.full.min.js" />
     <Content Include="Scripts\ai.0.22.19-build00125.js" />
     <Content Include="Scripts\ai.0.22.19-build00125.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -329,6 +344,7 @@
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %284%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %285%29.pubxml" />
+    <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %286%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -392,10 +408,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="css\" />
     <Folder Include="img\" />
     <Folder Include="lib\fonts\" />
-    <Folder Include="lib\js\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
