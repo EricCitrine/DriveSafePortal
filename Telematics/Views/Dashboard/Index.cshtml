@@ -1,10 +1,10 @@
-﻿@model Telematics.Models.LogsViewModel
+﻿@model Telematics.Models.GPSViewModel
 @section Breadcrumbs{
     <ol class="breadcrumb navbar-breadcrumb">
         <li>Dashboard</li>
     </ol>
 }
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyCI3JqXKW83iCKPJOWxzoI41BnD7bT8SjY" async="" defer="defer" type="text/javascript"></script>
 <script type="text/javascript">
     var map;
@@ -22,17 +22,16 @@
         map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
         var _c = null;
 
-
-        @foreach(var item in Model.logs_list)
+        @foreach(var item in Model.gps_location_list)
         {
             <text>
-                 markersArray.push(new google.maps.Marker({
+                 markersArray['@item.vehicle_id'] = new google.maps.Marker({
                      draggable: false,
                      animation: google.maps.Animation.DROP,
                      position: new google.maps.LatLng('@item.lat', '@item.lng', false),
-                     title: '@item.lic_no',
+                     title: '@item.vehicle_id',
                      map: map
-                 }));
+                 });
             </text>
         }
 
@@ -61,20 +60,31 @@
     }
 
     function findMarker() {
-        var found = false
-        for(i = 0 ; i < markersArray.length ; i++) {
-            if (markersArray[i].getTitle() == document.getElementById('v_no').value) {
-                map.panTo(markersArray[i].getPosition());
-                if (map.getZoom() < 15) {
-                    smoothZoomTo();
-                }
-                found = true;
-            }
-        }
-        if (!found) {
-            putMarker();
-        }
+
     }
+
+    var i = setInterval(function getGPSUpdate() {
+        $.ajax({
+            type: "POST",
+            url: "GetGPSUpdates",
+            success: function (data) {
+                $.each(data.Data, function (index, value) {
+                    var id = value.id;
+                    var vehicle_id = value.vehicle_id;
+                    var driver_id = value.driver_id;
+                    var time_stamp = value.time_stamp;
+                    var lat = value.lat;
+                    var lng = value.lng;
+
+                    var marker = markersArray[vehicle_id];
+                    marker.setPosition(new google.maps.LatLng(lat, lng));
+                })
+            },
+            error: function () {
+                alert("Unable to get GPS Update");
+            }
+        })
+    }, 2000)
 
     function smoothZoomTo() {
         map.setZoom(map.getZoom() + 1);
@@ -100,7 +110,7 @@
 <div class="side-body padding-top">
     <div class="row">
         <div class="col-md-6" style="margin-bottom:10px">
-            <h3 style="background-color:#22A7F0;padding:10px 10px 10px 10px">Find Vehicle</h3>
+            <h3 id="output" name="output" style="background-color:#22A7F0;padding:10px 10px 10px 10px">Find Vehicle</h3>
             <label>Vehicle No.</label>
             <input type="text" name="v_no" id="v_no" onchange="findMarker()" style="padding:10px 10px 10px 10px" placeholder="License Number" />
         </div>

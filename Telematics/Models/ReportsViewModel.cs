@@ -8,8 +8,8 @@ namespace Telematics.Models
         public List<Report> Reports { get; set; }
     }
 
-    public class LogsViewModel
+    public class GPSViewModel
     {
-        public IList<Logs> logs_list { get; set; }
+        public IList<GPSLocation> gps_location_list { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Services;
 using Microsoft.PowerBI.Api.V1;
 using Microsoft.PowerBI.Security;
 using Microsoft.Rest;
@@ -26,17 +27,22 @@ namespace Telematics.Controllers
             this.apiUrl = ConfigurationManager.AppSettings["powerbi:ApiUrl"];
         }
 
+        public string GetGPSUpdate()
+        {
+            return "test";
+        }
+
         public ActionResult Index()
         {
-            var logs_list_query = new List<Logs>();
+            var gps_location_list_query = new List<GPSLocation>();
             using (var db = new ApplicationDbContext())
             {
-                logs_list_query = (from l in db.Logs
-                            select l).ToList();
+                gps_location_list_query = (from g in db.GPSLocation
+                                        select g).ToList();
             }
-            var model = new LogsViewModel()
+            var model = new GPSViewModel()
             {
-                logs_list = logs_list_query.ToList()
+                gps_location_list = gps_location_list_query.ToList()
             };
 
             return View(model);
@@ -85,6 +91,20 @@ namespace Telematics.Controllers
             };
 
             return client;
+        }
+
+        [WebMethod]
+        public JsonResult GetGPSUpdates()
+        {
+            var gps_update_query = new List<GPSLocation>();
+            using (var db = new ApplicationDbContext())
+            {
+                gps_update_query = (from g in db.GPSLocation
+                                    select g).ToList();
+            }
+            gps_update_query.Add(new GPSLocation() { id = 1, driver_id = "123", vehicle_id = "222", lat = "-123", lng = "123", time_stamp = new DateTime() });
+            gps_update_query.Add(new GPSLocation() { id = 2, driver_id = "321", vehicle_id = "333", lat = "-123", lng = "123", time_stamp = new DateTime() });
+            return Json(new { Data = gps_update_query }, JsonRequestBehavior.AllowGet);
         }
     }
 }
