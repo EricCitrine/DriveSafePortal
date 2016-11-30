@@ -4,49 +4,135 @@
         <li>Dashboard</li>
     </ol>
 }
+<link rel="stylesheet" type="text/css" href="../lib/css/Dashboard.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyCI3JqXKW83iCKPJOWxzoI41BnD7bT8SjY" async="" defer="defer" type="text/javascript"></script>
+<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBekDgS4qXKqCkeO5APg7jZCx17ToX4Mvk&v=3.exp&libraries=places,drawing,geometry"  type="text/javascript"></script>
+<script src="../js/markerAnimate.js" ></script>
 <script type="text/javascript">
     var map;
     var markersArray = [];
+    var infoWindowArray = [];
     var opt = { minZoom: 6, maxZoom: 9 };
+    var image;
+    var angles = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360];
+
+    window.onresize = function () {
+
+        google.maps.event.trigger(map, "resize");
+    }
     window.onload = function () {
+
         var mapOptions = {
             center: new google.maps.LatLng(1.372526, 103.802263),
             zoom: 12,
             streetViewControl: false,
             mapTypeId: google.maps.MapTypeId.ROADMAP,
-            minZoom: 6,
         };
-        var infoWindow = new google.maps.InfoWindow();
         map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
-        var _c = null;
+
+        image = {
+            url: '../img/car_off_0.png',
+            // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(50, 50),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at (0, 32).
+            anchor: new google.maps.Point(25, 25)
+            //path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            //scale: 3,
+            //rotation: 90
+        };
 
         @foreach(var item in Model.gps_location_list)
         {
+            if (float.Parse(item.vVehicleStatus.lat) != 0) {
             <text>
-                 markersArray['@item.vehicle_id'] = new google.maps.Marker({
-                     draggable: false,
-                     animation: google.maps.Animation.DROP,
-                     position: new google.maps.LatLng('@item.lat', '@item.lng', false),
-                     title: '@item.vehicle_id',
-                     map: map
-                 });
+                infoWindowArray['@item.vehicle.device_no'] = new google.maps.InfoWindow({
+                    content: '<table><tr><td><b>License Number</b></td><td style="padding:0px 5px 0px 5px">:</td><td> @item.vehicle.lic_no </td></tr></table>'
+                });
+
+                markersArray['@item.vehicle.device_no'] = new google.maps.Marker({
+                    draggable: false,
+                    animation: google.maps.Animation.DROP,
+                    position: new google.maps.LatLng('@item.vVehicleStatus.lat' , '@item.vVehicleStatus.lng'),
+                    title: '@item.vehicle.device_no',
+                    icon: image,
+                    map: map
+                });
+
+                google.maps.event.addListener(markersArray['@item.vehicle.device_no'], 'click', function () {
+                    infoWindowArray['@item.vehicle.device_no'].close();
+                    infoWindowArray['@item.vehicle.device_no'].open(map, markersArray['@item.vehicle.device_no']);
+                    findMarker('@item.vehicle.device_no');
+                });
+                google.maps.event.addListener(markersArray['@item.vehicle.device_no'], 'mouseover', function (e) {
+
+                });
+                infoWindowArray['@item.vehicle.device_no'].open(map, markersArray['@item.vehicle.device_no']);
+            </text>
+            }
+        }
+
+        var trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
+        filterMarker();
+        initializeMarkers();
+    }
+    var filter_text;
+    function filterMarker() {
+
+        var v_list = document.getElementById('vehicle_list');
+        v_list.innerHTML = '<input type="checkbox" id="selectall" name="selectall" style="float:left" onclick="checkAll()" /><p style="padding-left:20px;cursor: pointer">Select All</p>';
+        var v_detail_list = document.getElementById('vehicle_list_details');
+        v_detail_list.innerHTML = "";
+
+        filter_text = $('#filter').val();
+        @foreach(var g in Model.gps_location_list)
+        {
+        <text>
+        var vid = '@g.vehicle.lic_no';
+        if (vid.includes(filter_text)) {
+            v_list.innerHTML += '<input type="checkbox" id=\"' + '@g.vehicle.device_no' + '\" name=\"' + '@g.vehicle.device_no' + '\" style="float:left" onclick="trackMarker(\'' + '@g.vehicle.device_no' + '\')" /><p class="vehiclelist" onclick="findMarker(\'' + '@g.vehicle.device_no' + '\')" style="padding-left:20px;cursor: pointer"><u> @g.vehicle.lic_no </u></p>';
+            v_detail_list.innerHTML += '<tr><td>' + '@g.vehicle.lic_no' + '</td><td>UNDEFINED</td><td>' + '@g.vVehicleStatus.alarm' + ' ( '+'@g.vVehicleStatus.alarm_time '+' )</td><td>' + '@g.vVehicleStatus.time_stamp' + '</td><td>' + '@g.vVehicleStatus.ignition' + '</td></tr>';
+        }
+        </text>
+        }
+    }
+
+    function checkAll() {
+        var cAll = document.getElementById('selectall');
+        @foreach(var g in Model.gps_location_list)
+        {
+            <text>
+                if(cAll.checked){
+                    document.getElementById('@g.vehicle.device_no').checked = true;
+                }
+                else {
+                    document.getElementById('@g.vehicle.device_no').checked = false;
+                }
+                trackMarker('@g.vehicle.device_no');
             </text>
         }
+    }
 
-        for (var i = 0 ; i < markersArray.length ; i++) {
-            google.maps.event.addListener(markersArray[i], 'click', function () {
-                map.panTo(this.getPosition());
-            });
+    function initializeMarkers() {
+        document.getElementById('selectall').checked = true;
+        @foreach(var g in Model.gps_location_list)
+        {
+            <text>
+                document.getElementById('@g.vehicle.device_no').checked = true;
+            </text>
         }
+    }
 
-        var myLatlng = new google.maps.LatLng(log.lat, log.lng);
-        var marker = new google.maps.Marker({
-            position: myLatlng,
-            map: map,
-            title: data.title
-        });
+    function trackMarker() {
+        var veh = document.getElementById(arguments[0]);
+        if (veh.checked) {
+            markersArray[arguments[0]].setMap(map);
+        }
+        else {
+            markersArray[arguments[0]].setMap(null);
+        }
     }
 
     function putMarker() {
@@ -60,7 +146,8 @@
     }
 
     function findMarker() {
-
+        map.panTo(markersArray[arguments[0]].getPosition());
+        smoothZoomTo();
     }
 
     var i = setInterval(function getGPSUpdate() {
@@ -69,57 +156,144 @@
             url: "GetGPSUpdates",
             success: function (data) {
                 $.each(data.Data, function (index, value) {
-                    var id = value.id;
-                    var vehicle_id = value.vehicle_id;
-                    var driver_id = value.driver_id;
-                    var time_stamp = value.time_stamp;
-                    var lat = value.lat;
-                    var lng = value.lng;
+                    var id = value.vVehicleStatus.id;
+                    var vehicle_id = value.vVehicleStatus.vehicle_id;
+                    var time_stamp = new Date(parseInt(value.vVehicleStatus.time_stamp.substr(6))).toLocaleString();
+                    var lat = value.vVehicleStatus.lat;
+                    var lng = value.vVehicleStatus.lng;
+                    var ignition = 'off';
+                    if (value.vVehicleStatus.ignition == "Ignition On" || value.vVehicleStatus.ignition == "Login") {
+                        ignition = 'on'
+                    }
 
+                    var closest = 15;
+                    var closest_direction;
+                    var direction = parseInt(value.vVehicleStatus.direction) % 360;
+                    for (var i = 0 ; i < angles.length ; i++) {
+                        if( direction - angles[i] < closest && direction - angles[i] >= 0 )
+                        {
+                            closest = direction - angles[i];
+                            closest_direction = angles[i];
+                        }
+                    }
                     var marker = markersArray[vehicle_id];
-                    marker.setPosition(new google.maps.LatLng(lat, lng));
+                    if (marker == null) {
+                        image.url = '../img/car_' + ignition + '_' + closest_direction + '.png';
+                        markersArray[vehicle_id] = new google.maps.Marker({
+                            draggable: false,
+                            animation: google.maps.Animation.DROP,
+                            position: new google.maps.LatLng(lat, lng, false),
+                            title: vehicle_id,
+                            icon: image,
+                            map: map
+                        });
+                        google.maps.event.addListener(markersArray[vehicle_id], 'click', function () {
+                            infoWindowArray[vehicle_id].close();
+                            infoWindowArray[vehicle_id].open(map, markersArray[vehicle_id]);
+                            findMarker(vehicle_id);
+                        });
+                        google.maps.event.addListener(markersArray[vehicle_id], 'mouseover', function (e) {
+
+                        });
+                        //var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + value.vVehicleStatus.lat + "," + value.vVehicleStatus.lng + "&key=AIzaSyBekDgS4qXKqCkeO5APg7jZCx17ToX4Mvk";
+                        //jQuery.getJSON(url, function (json) {
+                        //    if (json["results"].length > 0) {
+                        //        infoWindowArray[vehicle_id] = new google.maps.InfoWindow({
+
+                        //            content: '<table><tr><td><b>License Number</b></td><td style="padding:0px 5px 0px 5px">:</td><td> ' + value.vehicle.lic_no + ' </td></tr></table>'
+                        //        });
+                        //        infoWindowArray[vehicle_id].open(map, markersArray[vehicle_id]);
+                        //    }
+                        //});
+                    }
+                    else {
+                        //var directionsService = new google.maps.DirectionsService();
+                        //var item_latlng = new google.maps.LatLng(lat, lng);
+                        //directionsService.route({ origin: item_latlng, destination: item_latlng, travelMode: google.maps.DirectionsTravelMode.DRIVING }, function (response, status) {
+                        //    if (status == google.maps.DirectionsStatus.OK) {
+                        //        //marker.setPosition(response.routes[0].legs[0].start_location);
+                        //        marker.animateTo(response.routes[0].legs[0].start_location);
+                        //    }
+                        //    else {
+                        //        //marker.setPosition(new google.maps.LatLng(lat, lng));
+                        //    }
+                        //});
+                        image.url = '../img/car_' + ignition + '_' + closest_direction + '.png';
+                        marker.setIcon(image);
+                        getDirection(marker.getPosition(), new google.maps.LatLng(lat, lng));
+                        marker.animateTo(new google.maps.LatLng(lat, lng));
+                        //console.log('Direction of ' + marker.title + ' ' + closest_direction + ' ' + direction + ' , URL : ' + '../img/car_' + ignition + '_' + closest_direction + '.png');
+                    }
                 })
             },
             error: function () {
-                alert("Unable to get GPS Update");
             }
         })
     }, 2000)
 
     function smoothZoomTo() {
-        map.setZoom(map.getZoom() + 1);
         if (map.getZoom() < 15) {
+            map.setZoom(map.getZoom() + 1);
             setTimeout(function () { smoothZoomTo(); }, 50);
         }
     }
 
-    function locate() {
-        document.getElementById('dvMap').appendChild('<button>abc</button>');
+    function getDirection() {
+        var heading = google.maps.geometry.spherical.computeHeading(arguments[0], arguments[1]);
     }
 
-    function search() {
-        var table_html = '<table style="width:100%" border="1">';
-        for (i = 0 ; i < markersArray.length ; i++) {
-            if (markersArray[i].getTitle() == document.getElementById('v_no').value) {
+    function getScrollBarWidth() {
+        var inner = document.createElement('p');
+        inner.style.width = "100%";
+        inner.style.height = "200px";
 
-            }
-        }
-    }
+        var outer = document.createElement('div');
+        outer.style.position = "absolute";
+        outer.style.top = "0px";
+        outer.style.left = "0px";
+        outer.style.visibility = "hidden";
+        outer.style.width = "200px";
+        outer.style.height = "150px";
+        outer.style.overflow = "hidden";
+        outer.appendChild(inner);
+
+        document.body.appendChild(outer);
+        var w1 = inner.offsetWidth;
+        outer.style.overflow = 'scroll';
+        var w2 = inner.offsetWidth;
+        if (w1 == w2) w2 = outer.clientWidth;
+
+        document.body.removeChild(outer);
+        alert(w1 - w2);
+        return (w1 - w2);
+    };
 </script>
 
 <div class="side-body padding-top">
-    <div class="row">
-        <div class="col-md-6" style="margin-bottom:10px">
-            <h3 id="output" name="output" style="background-color:#22A7F0;padding:10px 10px 10px 10px">Find Vehicle</h3>
-            <label>Vehicle No.</label>
-            <input type="text" name="v_no" id="v_no" onchange="findMarker()" style="padding:10px 10px 10px 10px" placeholder="License Number" />
-        </div>
-        <div id="resulttable" name="resulttable" class="col-md-6" style="margin-bottom:10px">
-            <h3 style="background-color:#00ff21;padding:10px 10px 10px 10px">Results</h3>
-        </div>
-    </div>
-    <div id="wrapper" style="position:relative">
+    <div id="wrapper" style="position:relative" class="col-md-9">
         <div id="dvMap" style="width:100%;position:relative; height: 500px">
         </div>
     </div>
+
+    <div class="col-md-3">
+        <h3 id="output" name="output" style="width:100%;background-color:#22A7F0;margin:0px;padding:10px">Vehicle List</h3>
+        <input type="text" name="filter" id="filter" onkeyup="filterMarker()" style="width:100%;padding:10px;margin:10px 0px 10px 0px" placeholder="Filter By License Number" />
+
+        <div id="vehicle_list" name="vehicle_list" style="overflow:auto;height:400px">
+            
+        </div>
+    </div>
+        <table class="scroll">
+            <thead>
+                <tr>
+                    <th>Vehicle No.</th>
+                    <th>Vehicle State</th>
+                    <th>Alarm</th>
+                    <th>Received At</th>
+                    <th>Ignition</th>
+                </tr>
+            </thead>
+            <tbody id="vehicle_list_details">
+            </tbody>
+        </table>
 </div>

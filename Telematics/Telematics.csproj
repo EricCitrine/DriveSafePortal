@@ -228,63 +228,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201609220937351_Initial.cs" />
-    <Compile Include="Migrations\201609220937351_Initial.Designer.cs">
-      <DependentUpon>201609220937351_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610100520471_log_version.cs" />
-    <Compile Include="Migrations\201610100520471_log_version.Designer.cs">
-      <DependentUpon>201610100520471_log_version.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610100551097_log_version1.cs" />
-    <Compile Include="Migrations\201610100551097_log_version1.Designer.cs">
-      <DependentUpon>201610100551097_log_version1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610120931013_vehicle.cs" />
-    <Compile Include="Migrations\201610120931013_vehicle.Designer.cs">
-      <DependentUpon>201610120931013_vehicle.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610130324264_vehicle1.cs" />
-    <Compile Include="Migrations\201610130324264_vehicle1.Designer.cs">
-      <DependentUpon>201610130324264_vehicle1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610130348449_vehicle2.cs" />
-    <Compile Include="Migrations\201610130348449_vehicle2.Designer.cs">
-      <DependentUpon>201610130348449_vehicle2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610130426403_vehicle3.cs" />
-    <Compile Include="Migrations\201610130426403_vehicle3.Designer.cs">
-      <DependentUpon>201610130426403_vehicle3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610130558027_vehicle4.cs" />
-    <Compile Include="Migrations\201610130558027_vehicle4.Designer.cs">
-      <DependentUpon>201610130558027_vehicle4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610130610053_vehicle5.cs" />
-    <Compile Include="Migrations\201610130610053_vehicle5.Designer.cs">
-      <DependentUpon>201610130610053_vehicle5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610170306446_log.cs" />
-    <Compile Include="Migrations\201610170306446_log.Designer.cs">
-      <DependentUpon>201610170306446_log.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610170319398_log1.cs" />
-    <Compile Include="Migrations\201610170319398_log1.Designer.cs">
-      <DependentUpon>201610170319398_log1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610170719561_log2.cs" />
-    <Compile Include="Migrations\201610170719561_log2.Designer.cs">
-      <DependentUpon>201610170719561_log2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610170905209_log3.cs" />
-    <Compile Include="Migrations\201610170905209_log3.Designer.cs">
-      <DependentUpon>201610170905209_log3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201610180245289_driverscore.cs" />
-    <Compile Include="Migrations\201610180245289_driverscore.Designer.cs">
-      <DependentUpon>201610180245289_driverscore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Logs.cs" />
@@ -306,21 +249,75 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="img\car_off_0.png" />
+    <Content Include="img\car_off_105.png" />
+    <Content Include="img\car_off_120.png" />
+    <Content Include="img\car_off_135.png" />
+    <Content Include="img\car_off_15.png" />
+    <Content Include="img\car_off_150.png" />
+    <Content Include="img\car_off_165.png" />
+    <Content Include="img\car_off_180.png" />
+    <Content Include="img\car_off_195.png" />
+    <Content Include="img\car_off_210.png" />
+    <Content Include="img\car_off_225.png" />
+    <Content Include="img\car_off_240.png" />
+    <Content Include="img\car_off_255.png" />
+    <Content Include="img\car_off_270.png" />
+    <Content Include="img\car_off_285.png" />
+    <Content Include="img\car_off_30.png" />
+    <Content Include="img\car_off_300.png" />
+    <Content Include="img\car_off_315.png" />
+    <Content Include="img\car_off_330.png" />
+    <Content Include="img\car_off_345.png" />
+    <Content Include="img\car_off_360.png" />
+    <Content Include="img\car_off_45.png" />
+    <Content Include="img\car_off_60.png" />
+    <Content Include="img\car_off_75.png" />
+    <Content Include="img\car_off_90.png" />
+    <Content Include="img\car_on_0.png" />
+    <Content Include="img\car_on_105.png" />
+    <Content Include="img\car_on_120.png" />
+    <Content Include="img\car_on_135.png" />
+    <Content Include="img\car_on_15.png" />
+    <Content Include="img\car_on_150.png" />
+    <Content Include="img\car_on_165.png" />
+    <Content Include="img\car_on_180.png" />
+    <Content Include="img\car_on_195.png" />
+    <Content Include="img\car_on_210.png" />
+    <Content Include="img\car_on_225.png" />
+    <Content Include="img\car_on_240.png" />
+    <Content Include="img\car_on_255.png" />
+    <Content Include="img\car_on_270.png" />
+    <Content Include="img\car_on_285.png" />
+    <Content Include="img\car_on_30.png" />
+    <Content Include="img\car_on_300.png" />
+    <Content Include="img\car_on_315.png" />
+    <Content Include="img\car_on_330.png" />
+    <Content Include="img\car_on_345.png" />
+    <Content Include="img\car_on_360.png" />
+    <Content Include="img\car_on_45.png" />
+    <Content Include="img\car_on_60.png" />
+    <Content Include="img\car_on_75.png" />
+    <Content Include="img\car_on_90.png" />
     <Content Include="js\alert.js" />
     <Content Include="js\app.js" />
     <Content Include="js\button.js" />
     <Content Include="js\card.js" />
     <Content Include="js\list.js" />
+    <Content Include="js\markerAnimate.js" />
     <Content Include="js\modal.js" />
     <Content Include="js\theming.js" />
     <Content Include="lib\css\animate.min.css" />
     <Content Include="lib\css\bootstrap-switch.min.css" />
     <Content Include="lib\css\bootstrap.min.css" />
     <Content Include="lib\css\checkbox3.min.css" />
+    <Content Include="lib\css\Dashboard.css" />
     <Content Include="lib\css\dataTables.bootstrap.css" />
     <Content Include="lib\css\font-awesome.min.css" />
     <Content Include="lib\css\jquery.dataTables.min.css" />
     <Content Include="lib\css\select2.min.css" />
+    <Content Include="lib\fonts\fontawesome-webfont.svg" />
+    <Content Include="lib\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="lib\js\ace\ace.js" />
     <Content Include="lib\js\ace\mode-html.js" />
     <Content Include="lib\js\ace\theme-github.js" />
@@ -339,12 +336,22 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\fonts\fontawesome-webfont.eot" />
+    <Content Include="lib\fonts\fontawesome-webfont.ttf" />
+    <Content Include="lib\fonts\fontawesome-webfont.woff" />
+    <Content Include="lib\fonts\fontawesome-webfont.woff2" />
+    <Content Include="lib\fonts\FontAwesome.otf" />
+    <Content Include="lib\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="lib\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="lib\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="lib\fonts\glyphicons-halflings-regular.woff2" />
     <None Include="Properties\PublishProfiles\CitrineTelematics.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %284%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %285%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %286%29.pubxml" />
+    <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy %287%29.pubxml" />
     <None Include="Properties\PublishProfiles\vehicleIoT - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -405,11 +412,10 @@
     <Content Include="Views\Account\Vehicles.cshtml" />
     <Content Include="Views\Account\VehicleRegister.cshtml" />
     <Content Include="Views\Account\EditVehicle.cshtml" />
+    <Content Include="Views\Account\Profile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="img\" />
-    <Folder Include="lib\fonts\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -421,50 +427,6 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201609220937351_Initial.resx">
-      <DependentUpon>201609220937351_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610100520471_log_version.resx">
-      <DependentUpon>201610100520471_log_version.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610100551097_log_version1.resx">
-      <DependentUpon>201610100551097_log_version1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610120931013_vehicle.resx">
-      <DependentUpon>201610120931013_vehicle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610130324264_vehicle1.resx">
-      <DependentUpon>201610130324264_vehicle1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610130348449_vehicle2.resx">
-      <DependentUpon>201610130348449_vehicle2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610130426403_vehicle3.resx">
-      <DependentUpon>201610130426403_vehicle3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610130558027_vehicle4.resx">
-      <DependentUpon>201610130558027_vehicle4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610130610053_vehicle5.resx">
-      <DependentUpon>201610130610053_vehicle5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610170306446_log.resx">
-      <DependentUpon>201610170306446_log.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610170319398_log1.resx">
-      <DependentUpon>201610170319398_log1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610170719561_log2.resx">
-      <DependentUpon>201610170719561_log2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610170905209_log3.resx">
-      <DependentUpon>201610170905209_log3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201610180245289_driverscore.resx">
-      <DependentUpon>201610180245289_driverscore.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\powerbi.d.ts" />

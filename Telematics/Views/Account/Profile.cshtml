@@ -1,0 +1,54 @@
+﻿@model Telematics.Models.ProfileViewModel
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Profile</li>
+    </ol>
+}
+<script type="text/javascript">
+    function getNewCode() {
+        var reset_code = confirm("Are you sure you wish to get a new code? The previous code will no longer be usable.");
+        if (reset_code == true) {
+            $.ajax({
+                type: "POST",
+                url: "getNewCompanyCode",
+                success: function (data) {
+                    $('#company_code').val(data);
+                },
+                error: function () {
+                    console.log("Failed to retrieve new code");
+                }
+            })
+        }
+    }
+</script>
+
+<div class="side-body padding-top">
+
+    @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <h4>Profile Information</h4>
+        <hr />
+        @Html.ValidationSummary("")
+        <div class="form-group">
+            @Html.LabelFor(m => m.user.Email, new { @class = "col-md-2 control-label" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(m => m.user.Email, new { @Value = Model.user.Email, @class = "form-control", @readonly = true })
+            </div>
+        </div>
+        if (User.IsInRole("Admin"))
+        {
+        <div class="form-group">
+            @Html.LabelFor(m => m.company.code, new { @class = "col-md-2 control-label" })
+            <div class="col-md-5">
+                @Html.TextBoxFor(m => m.company.code, new { @Value = Model.company.code, @class = "form-control", @readonly = true, @id = "company_code" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" onclick="getNewCode()" class="btn btn-default" value="Reset Code" />
+            </div>
+        </div>
+        }
+    }
+</div>

@@ -53,13 +53,62 @@ namespace Telematics.Controllers
             }
         }
 
+        public string getNewCompanyCode()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                Random rn;
+                int count;
+                string code;
+                do
+                {
+                    count = 0;
+                    rn = new Random();
+                    code = rn.Next(1000, 9999).ToString();
+                    count = (from c in db.Companie
+                                         where c.code == code
+                                         select c).Count();
+
+                } while (count > 0);
+                var current_company = (from c in db.Companie
+                                       join u in db.Users on c.name equals u.Company
+                                       where u.UserName == User.Identity.Name
+                                       select c).FirstOrDefault();
+                current_company.code = code;
+                db.SaveChanges();
+                return code;
+            }
+        }
+
+        //
+        // GET: /Account/Profile
+        [Authorize(Roles = "Super, Admin")]
+        public ActionResult Profile()
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                var current_user = (from u in db.Users
+                                    join c in db.Companie on u.Company equals c.name
+                                    where u.UserName == User.Identity.Name
+                                    select new ProfileViewModel() { user = u, company = c }).FirstOrDefault();
+            
+                return View(current_user);
+            }
+        }
+
         //
         // GET: /Account/Vehicles
+        [Authorize(Roles = "Super, Admin, Manager")]
         public ActionResult Vehicles()
         {
             using (var db = new ApplicationDbContext())
             {
+                var current_user = (from u in db.Users
+                                    where u.UserName == User.Identity.Name
+                                    select u).FirstOrDefault();
                 var vehicles_query = (from v in db.Vehicle
+                                      join o in db.OBD on v.device_no equals o.device_id
+                                      where o.company == current_user.Company
                                       select v).ToList();
 
                 var vehicles_list = new Vehicles()
@@ -70,9 +119,26 @@ namespace Telematics.Controllers
             }
         }
 
+        public ActionResult IsOBDUnique(string id)
+        {
+            using (var db = new ApplicationDbContext())
+            {
+                try
+                {
+                    var tag = db.OBD.Single(m => m.device_id == id);
+                    return Json(false, JsonRequestBehavior.AllowGet);
+                }
+                catch (Exception)
+                {
+                    return Json(true, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
         //
         // GET: /Account/VehicleRegister
         [AllowAnonymous]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public ActionResult VehicleRegister()
         {
             return View();
@@ -83,15 +149,40 @@ namespace Telematics.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> VehicleRegister(VehicleRegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var current_user = UserManager.FindById(User.Identity.GetUserId());
+                var isUnique = true;
                 using (var db = new ApplicationDbContext())
                 {
-                    db.Vehicle.Add(new Vehicle { lic_no = model.LicensePlateNumber, brand = model.Brand, v_model = model.VehicleModel, device_no = model.DeviceNo });
-                    db.SaveChanges();
-                    return RedirectToAction("Vehicles", "Account");
+                    var v_count = (from v in db.Vehicle
+                                   where v.lic_no == model.LicensePlateNumber
+                                   select v).Count();
+                    var o_count = (from o in db.OBD
+                                   where o.device_id == model.DeviceNo
+                                   select o).Count();
+                    if (v_count > 0)
+                    {
+                        isUnique = false;
+                        ModelState.AddModelError("LicensePlateNumber", "License plate number already in use!");
+                    }
+                    if (o_count > 0) {
+                        isUnique = false;
+                        ModelState.AddModelError("DeviceNo", "Device number already in use!");
+                    }
+                }
+                if (isUnique)
+                { 
+                    using (var db = new ApplicationDbContext())
+                    {
+                        db.Vehicle.Add(new Vehicle { lic_no = model.LicensePlateNumber, brand = model.Brand, v_model = model.VehicleModel, device_no = model.DeviceNo });
+                        db.OBD.Add(new OBD { id = model.id, device_id = model.DeviceNo, company = current_user.Company });
+                        db.SaveChanges();
+                        return RedirectToAction("Vehicles", "Account");
+                    }
                 }
             }
 
@@ -101,6 +192,7 @@ namespace Telematics.Controllers
 
         //
         // GET: /Account/EditVehicle
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> EditVehicle(int vehicleid)
         {
             if (vehicleid == null)
@@ -129,22 +221,54 @@ namespace Telematics.Controllers
         // POST: /Account/EditVehicle
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> EditVehicle(VehicleRegisterViewModel edit_model)
         {
             if (ModelState.IsValid)
             {
+                var isUnique = true;
                 using (var db = new ApplicationDbContext())
                 {
-                    var vehicle = (from v in db.Vehicle
+                    var v_count = (from v in db.Vehicle
+                                   where v.lic_no == edit_model.LicensePlateNumber
+                                   && v.id != edit_model.id
+                                   select v).Count();
+                    var o_count = (from o in db.OBD
+                                   join v in db.Vehicle on o.device_id equals v.device_no
+                                   where o.device_id == edit_model.DeviceNo
+                                   && v.id != edit_model.id
+                                   select o).Count();
+                    if (v_count > 0)
+                    {
+                        isUnique = false;
+                        ModelState.AddModelError("LicensePlateNumber", "License plate number already in use!");
+                    }
+                    if (o_count > 0)
+                    {
+                        isUnique = false;
+                        ModelState.AddModelError("DeviceNo", "Device number already in use!");
+                    }
+                }
+                if (isUnique)
+                {
+                    using (var db = new ApplicationDbContext())
+                    {
+                        var vehicle = (from v in db.Vehicle
+                                       where v.id == edit_model.id
+                                       select v).FirstOrDefault();
+                        var obd = (from o in db.OBD
+                                   join v in db.Vehicle on o.device_id equals v.device_no
                                    where v.id == edit_model.id
-                                   select v).FirstOrDefault();
-                    vehicle.lic_no = edit_model.LicensePlateNumber;
-                    vehicle.brand = edit_model.Brand;
-                    vehicle.v_model = edit_model.VehicleModel;
-                    vehicle.device_no = edit_model.DeviceNo;
+                                   select o).FirstOrDefault();
+                        vehicle.lic_no = edit_model.LicensePlateNumber;
+                        vehicle.brand = edit_model.Brand;
+                        vehicle.v_model = edit_model.VehicleModel;
+                        vehicle.device_no = edit_model.DeviceNo;
+                        obd.device_id = edit_model.DeviceNo;
 
-                    db.SaveChanges();
-                    return RedirectToAction("Vehicles", "Account");
+                        db.SaveChanges();
+                        return RedirectToAction("Vehicles", "Account");
+                    }
                 }
             }
             
@@ -156,16 +280,21 @@ namespace Telematics.Controllers
 
         //
         // POST: /Account/Delete
-        public void DeleteVehicle(int vehicleid)
+        [Authorize(Roles = "Super, Admin, Manager")]
+        public async Task<ActionResult> DeleteVehicle(int vehicleid)
         {
             using (var db = new ApplicationDbContext())
             {
                 var vehicle = (from v in db.Vehicle
                                where v.id == vehicleid
                                select v).FirstOrDefault();
+                var obd = (from o in db.OBD
+                           join v in db.Vehicle on o.device_id equals v.device_no
+                           select o).FirstOrDefault();
                 db.Vehicle.Remove(vehicle);
+                db.OBD.Remove(obd);
                 db.SaveChanges();
-                RedirectToAction("Vehicles", "Account");
+                return RedirectToAction("Vehicles", "Account");
             }
         }
 
@@ -182,12 +311,15 @@ namespace Telematics.Controllers
                 {
                     users = (from u in db.Users
                                  join r in db.Roles on u.Roles.FirstOrDefault().RoleId equals r.Id
+                                 join c in db.Companie on u.Company equals c.name
                                  where r.Name != "Super"
+                                 && c.name == "Citrine"
                                  select u).ToList();
                 } else if (User.IsInRole("Admin"))
                 {
                     users = (from u in db.Users
                                  join r in db.Roles on u.Roles.FirstOrDefault().RoleId equals r.Id
+                                 join c in db.Companie on u.Company equals c.name
                                  where r.Name != "Super"
                                  where r.Name != "Admin"
                                  select u).ToList();
@@ -195,12 +327,14 @@ namespace Telematics.Controllers
                 {
                     users = (from u in db.Users
                                  join r in db.Roles on u.Roles.FirstOrDefault().RoleId equals r.Id
+                                 join c in db.Companie on u.Company equals c.name
                                  where r.Name == "Driver"
                                  select u).ToList();
                 } else
                 {
                     users = (from u in db.Users
                                  join r in db.Roles on u.Roles.FirstOrDefault().RoleId equals r.Id
+                                 join c in db.Companie on u.Company equals c.name
                                  select u).ToList();
                 }
                 
@@ -225,7 +359,7 @@ namespace Telematics.Controllers
 
                 }
 
-                var model = new User()
+                var model = new UserWithRoles()
                 {
                     users = users.ToList(),
                     roles = roles.ToList()
@@ -236,6 +370,7 @@ namespace Telematics.Controllers
 
         //
         // GET: /Account/Edit
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> Edit(string userid)
         {
             if (userid == null)
@@ -247,24 +382,42 @@ namespace Telematics.Controllers
             if (UserManager.IsInRole(target_user.Id, "Manager"))
             {
                 access_right = "Manager";
+
+                using (var appdb = new ApplicationDbContext())
+                {
+                    var list = (from r in appdb.Roles
+                                where r.Name == "Driver"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
+                    {
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
+                    }
+                    ViewBag.SelectList = list;
+                }
             } else if (UserManager.IsInRole(target_user.Id, "Admin"))
             {
                 access_right = "Admin";
-            }
-            using (var appdb = new ApplicationDbContext())
-            {
-                var list = (from r in appdb.Roles
-                                      where r.Name != "Super"
-                                      select new SelectListItem() { Text = r.Name, Value = r.Name }
-                             ).ToList();
-                foreach(SelectListItem item in list)
+
+                using (var appdb = new ApplicationDbContext())
                 {
-                    if(item.Value.Equals(access_right))
+                    var list = (from r in appdb.Roles
+                                where r.Name != "Super"
+                                && r.Name != "Admin"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
                     {
-                        item.Selected = true;
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
                     }
+                    ViewBag.SelectList = list;
                 }
-                ViewBag.SelectList = list;
             }
 
             var model = new EditViewModel()
@@ -280,6 +433,7 @@ namespace Telematics.Controllers
         // POST: /Account/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> Edit(EditViewModel edit_model)
         {
             if (ModelState.IsValid)
@@ -301,20 +455,47 @@ namespace Telematics.Controllers
                 AddErrors(result);
             }
 
-            using (var appdb = new ApplicationDbContext())
+            var access_right = "Driver";
+            if (UserManager.IsInRole(edit_model.Id, "Manager"))
             {
-                var list = (from r in appdb.Roles
-                            where r.Name != "Super"
-                            select new SelectListItem() { Text = r.Name, Value = r.Name }
-                             ).ToList();
-                foreach (SelectListItem item in list)
+                access_right = "Manager";
+
+                using (var appdb = new ApplicationDbContext())
                 {
-                    if (item.Value.Equals(edit_model.AccessRole))
+                    var list = (from r in appdb.Roles
+                                where r.Name == "Driver"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
                     {
-                        item.Selected = true;
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
                     }
+                    ViewBag.SelectList = list;
                 }
-                ViewBag.SelectList = list;
+            }
+            else if (UserManager.IsInRole(edit_model.Id, "Admin"))
+            {
+                access_right = "Admin";
+
+                using (var appdb = new ApplicationDbContext())
+                {
+                    var list = (from r in appdb.Roles
+                                where r.Name != "Super"
+                                && r.Name != "Admin"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
+                    {
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
+                    }
+                    ViewBag.SelectList = list;
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -323,6 +504,7 @@ namespace Telematics.Controllers
 
         //
         // POST: /Account/Delete
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async void Delete(string userid)
         {
             var user = await UserManager.FindByIdAsync(userid);
@@ -415,14 +597,50 @@ namespace Telematics.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public ActionResult Register()
         {
-            using (var appdb = new ApplicationDbContext())
+            var access_right = "Driver";
+            if (User.IsInRole("Manager"))
             {
-                ViewBag.SelectList = (from r in appdb.Roles
-                                      where r.Name != "Super"
-                                      select new SelectListItem() {  Text = r.Name, Value = r.Name }
-                             ).ToList();
+                access_right = "Manager";
+
+                using (var appdb = new ApplicationDbContext())
+                {
+                    var list = (from r in appdb.Roles
+                                where r.Name == "Driver"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
+                    {
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
+                    }
+                    ViewBag.SelectList = list;
+                }
+            }
+            else if (User.IsInRole("Admin"))
+            {
+                access_right = "Admin";
+
+                using (var appdb = new ApplicationDbContext())
+                {
+                    var list = (from r in appdb.Roles
+                                where r.Name != "Super"
+                                && r.Name != "Admin"
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                 ).ToList();
+                    foreach (SelectListItem item in list)
+                    {
+                        if (item.Value.Equals(access_right))
+                        {
+                            item.Selected = true;
+                        }
+                    }
+                    ViewBag.SelectList = list;
+                }
             }
             return View();
         }
@@ -430,13 +648,14 @@ namespace Telematics.Controllers
         //
         // POST: /Account/Register
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super, Admin, Manager")]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber };
+                var current_user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, PhoneNumber = model.PhoneNumber, Company = current_user.Company };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

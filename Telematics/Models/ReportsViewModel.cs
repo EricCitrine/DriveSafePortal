@@ -10,6 +10,6 @@ namespace Telematics.Models
 
     public class GPSViewModel
     {
-        public IList<GPSLocation> gps_location_list { get; set; }
+        public IList<VehicleGPS> gps_location_list { get; set; }
     }
 }

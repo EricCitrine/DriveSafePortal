@@ -9,6 +9,9 @@ using Microsoft.PowerBI.Security;
 using Microsoft.Rest;
 using Telematics.Models;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity;
+using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace Telematics.Controllers
 {
@@ -27,22 +30,36 @@ namespace Telematics.Controllers
             this.apiUrl = ConfigurationManager.AppSettings["powerbi:ApiUrl"];
         }
 
-        public string GetGPSUpdate()
+        [WebMethod]
+        public JsonResult GetAllItems()
         {
-            return "test";
-        }
-
-        public ActionResult Index()
-        {
-            var gps_location_list_query = new List<GPSLocation>();
+            var gps_update_query = new List<Logs>();
             using (var db = new ApplicationDbContext())
             {
-                gps_location_list_query = (from g in db.GPSLocation
-                                        select g).ToList();
+                gps_update_query = (from g in db.Logs
+                                    select g).ToList();
+            }
+            return Json(new { Data = gps_update_query }, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> Index()
+        {
+            var vehicle_gps_list = new List<VehicleGPS>();
+            using (var db = new ApplicationDbContext())
+            {
+                var current_user = (from u in db.Users
+                                where u.UserName == User.Identity.Name
+                                select u).FirstOrDefault();                
+
+                vehicle_gps_list = (from g in db.VehicleStatus
+                                    join o in db.OBD on g.vehicle_id equals o.device_id
+                                    join v in db.Vehicle on g.vehicle_id equals v.device_no
+                                    where o.company == current_user.Company
+                                    select new VehicleGPS { vVehicleStatus = g, vOBD = o, vehicle = v }).ToList();
             }
             var model = new GPSViewModel()
             {
-                gps_location_list = gps_location_list_query.ToList()
+                gps_location_list = vehicle_gps_list.ToList()
             };
 
             return View(model);
@@ -96,15 +113,44 @@ namespace Telematics.Controllers
         [WebMethod]
         public JsonResult GetGPSUpdates()
         {
-            var gps_update_query = new List<GPSLocation>();
+            //var today = DateTime.Now;
+            //var yesterday = today.AddDays(-1);
+            //var gps_update_query = new List<GPSLocation>();
+            var vehicle_gps_list = new List<VehicleGPS>();
             using (var db = new ApplicationDbContext())
             {
-                gps_update_query = (from g in db.GPSLocation
-                                    select g).ToList();
+                var current_user = (from u in db.Users
+                                    where u.UserName == User.Identity.Name
+                                    select u).FirstOrDefault();
+                if (current_user == null)
+                {
+                    RedirectToAction("Login", "Account");
+                }
+                //gps_update_query = (from g in db.GPSLocation
+                //                    join o in db.OBD on g.vehicle_id equals o.device_id
+                //                    where g.time_stamp > yesterday
+                //                  && o.company == current_user.Company
+                //                    select g).ToList();
+                try
+                {
+                    vehicle_gps_list = (from g in db.VehicleStatus
+                                        join o in db.OBD on g.vehicle_id equals o.device_id
+                                        join v in db.Vehicle on g.vehicle_id equals v.device_no
+                                        where o.company == current_user.Company
+                                        && g.lat != "0"
+                                        select new VehicleGPS { vVehicleStatus = g, vOBD = o, vehicle = v }).ToList();// { vGPSLocation = g, vOBD = o })).ToList();
+
+                    var model = new GPSViewModel()
+                    {
+                        gps_location_list = vehicle_gps_list.ToList()
+                    };
+                }
+                catch (Exception e)
+                {
+
+                }
             }
-            gps_update_query.Add(new GPSLocation() { id = 1, driver_id = "123", vehicle_id = "222", lat = "-123", lng = "123", time_stamp = new DateTime() });
-            gps_update_query.Add(new GPSLocation() { id = 2, driver_id = "321", vehicle_id = "333", lat = "-123", lng = "123", time_stamp = new DateTime() });
-            return Json(new { Data = gps_update_query }, JsonRequestBehavior.AllowGet);
+            return Json(new { Data = vehicle_gps_list }, JsonRequestBehavior.AllowGet);
         }
     }
 }

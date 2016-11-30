@@ -36,6 +36,9 @@
                     <td>
                         <span style="font-weight:bold">Model</span>
                     </td>
+                    <td>
+                        <span style="font-weight:bold">OBD ID</span>
+                    </td>
                     <td align="center">
                         <span style="font-weight:bold">Actions</span>
                     </td>
@@ -53,6 +56,9 @@
                         </td>
                         <td>
                             @vehicle.v_model
+                        </td>
+                        <td>
+                            @vehicle.device_no
                         </td>
                         <td align="center">
                             <a href="@Url.Action("EditVehicle", "Account", new { vehicleid = vehicle.id })">

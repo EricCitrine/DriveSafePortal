@@ -1,8 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace Telematics.Models
 {
+
+    public class ProfileViewModel
+    {
+        public ApplicationUser user;
+        public Companie company;
+    }
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
@@ -77,7 +84,7 @@ namespace Telematics.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         [Required]
@@ -105,7 +112,7 @@ namespace Telematics.Models
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }
@@ -158,7 +165,7 @@ namespace Telematics.Models
         public int driver_score { get; set; }
     }
 
-    public class User
+    public class UserWithRoles
     {
         public IList<Telematics.Models.ApplicationUser> users { get; set; }
         public IList<string> roles { get; set; }
@@ -188,7 +195,7 @@ namespace Telematics.Models
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Confirm New password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
         
         [Required]

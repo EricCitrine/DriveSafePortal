@@ -24,7 +24,7 @@
                 padding:10px 10px 10px 10px
             }
         </style>
-            <table style="width:100%" border="1">
+            <table style="width:100%;" border="1">
                 <thead>
                     <tr>
                         <td>
@@ -34,6 +34,12 @@
                             <span style="font-weight:bold">Email</span></td>
                         <td>
                             <span style="font-weight:bold">Access Right</span></td>
+                        @if (User.IsInRole("Super"))
+                        {
+                            <td>
+                                <span style="font-weight:bold">Company</span>
+                            </td>
+                        }
                         <td align="center">
                             <span style="font-weight:bold">Actions</span></td>
                     </tr>
@@ -56,6 +62,12 @@
                                 i++;
                             }
                         </td>
+                        @if (User.IsInRole("Super"))
+                        {
+                            <td>
+                                @user.Company
+                            </td>
+                                    }
                         <td align="center">
                                 <a href="@Url.Action("Edit", "Account", new { userid = user.Id })">
                                     <div class="card green summary-inline" style="width:25%;display:inline-block;padding:2%;margin-left:5%">
