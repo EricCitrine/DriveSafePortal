@@ -1,0 +1,271 @@
+﻿@model Telematics.Models.TrackViewModel
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Dashboard</li>
+    </ol>
+}
+<link rel="stylesheet" type="text/css" href="../lib/css/Dashboard.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="//maps.googleapis.com/maps/api/js?key=AIzaSyBekDgS4qXKqCkeO5APg7jZCx17ToX4Mvk&v=3.exp&libraries=places,drawing,geometry"  type="text/javascript"></script>
+<script src="../js/markerAnimate.js" ></script>
+<script type="text/javascript">
+    var map;
+    var markersArray = [];
+    var infoWindowArray = [];
+    var opt = { minZoom: 6, maxZoom: 9 };
+    var image;
+    var angles = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360];
+
+    window.onresize = function () {
+
+        google.maps.event.trigger(map, "resize");
+    }
+    window.onload = function () {
+
+        var mapOptions = {
+            center: new google.maps.LatLng(1.372526, 103.802263),
+            zoom: 12,
+            streetViewControl: false,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+        };
+        map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+
+        image = {
+            url: '../img/car_off_0.png',
+            // This marker is 20 pixels wide by 32 pixels high.
+            size: new google.maps.Size(50, 50),
+            // The origin for this image is (0, 0).
+            origin: new google.maps.Point(0, 0),
+            // The anchor for this image is the base of the flagpole at (0, 32).
+            anchor: new google.maps.Point(25, 25)
+            //path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            //scale: 3,
+            //rotation: 90
+        };
+
+        @foreach(var item in Model.drivergps)
+        {
+            if (item.latitude != 0.0) {
+            <text>
+                infoWindowArray['@item.driverid'] = new google.maps.InfoWindow({
+                    content: '<table><tr><td><b>Driver</b></td><td style="padding:0px 5px 0px 5px">:</td><td> @item.driverid </td></tr></table>'
+                });
+
+                markersArray['@item.driverid'] = new google.maps.Marker({
+                    draggable: false,
+                    animation: google.maps.Animation.DROP,
+                    position: new google.maps.LatLng('@item.latitude' , '@item.longitude'),
+                    title: '@item.driverid',
+                    icon: image,
+                    map: map
+                });
+
+        google.maps.event.addListener(markersArray['@item.driverid'], 'click', function () {
+                    infoWindowArray['@item.driverid'].close();
+                    infoWindowArray['@item.driverid'].open(map, markersArray['@item.driverid']);
+                    findMarker('@item.driverid');
+                });
+                google.maps.event.addListener(markersArray['@item.driverid'], 'mouseover', function (e) {
+
+                });
+                infoWindowArray['@item.driverid'].open(map, markersArray['@item.driverid']);
+            </text>
+            }
+        }
+
+        var trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
+        filterMarker();
+        initializeMarkers();
+    }
+    var filter_text;
+    function filterMarker() {
+
+        var v_list = document.getElementById('vehicle_list');
+        v_list.innerHTML = '<input type="checkbox" id="selectall" name="selectall" style="float:left" onclick="checkAll()" /><p style="padding-left:20px;cursor: pointer">Select All</p>';
+
+        filter_text = $('#filter').val();
+        @foreach(var g in Model.drivergps)
+        {
+        <text>
+        var vid = '@g.driverid';
+        if (vid.includes(filter_text)) {
+            v_list.innerHTML += '<input type="checkbox" id=\"' + '@g.driverid' + '\" name=\"' + '@g.driverid' + '\" style="float:left" onclick="trackMarker(\'' + '@g.driverid' + '\')" /><p class="vehiclelist" onclick="findMarker(\'' + '@g.driverid' + '\')" style="padding-left:20px;cursor: pointer"><u> @g.driverid </u></p>';
+        }
+        </text>
+        }
+    }
+
+    function checkAll() {
+        var cAll = document.getElementById('selectall');
+        @foreach(var g in Model.drivergps)
+        {
+            <text>
+                if(cAll.checked){
+                    document.getElementById('@g.driverid').checked = true;
+                }
+                else {
+                    document.getElementById('@g.driverid').checked = false;
+                }
+                trackMarker('@g.driverid');
+            </text>
+        }
+    }
+
+    function initializeMarkers() {
+        document.getElementById('selectall').checked = true;
+        @foreach(var g in Model.drivergps)
+        {
+            <text>
+                document.getElementById('@g.driverid').checked = true;
+            </text>
+        }
+    }
+
+    function trackMarker() {
+        var veh = document.getElementById(arguments[0]);
+        if (veh.checked) {
+            markersArray[arguments[0]].setMap(map);
+        }
+        else {
+            markersArray[arguments[0]].setMap(null);
+        }
+    }
+
+    function putMarker() {
+        new google.maps.Marker({
+            draggable: false,
+            animation: google.maps.Animation.DROP,
+            position: new google.maps.LatLng(1.375487, 103.809876 , false),
+            title: "test",
+            map: map
+        })
+    }
+
+    function findMarker() {
+        map.panTo(markersArray[arguments[0]].getPosition());
+        smoothZoomTo();
+    }
+
+    var i = setInterval(function getGPSUpdate() {
+        $.ajax({
+            type: "POST",
+            url: "GetLatestDriverGPS",
+            success: function (data) {
+                $.each(data.Data, function (index, value) {
+                    var driver_id = value.driverid;
+                    var lat = value.latitude;//value.vVehicleStatus.lat;
+                    var lng = value.longitude;//value.vVehicleStatus.lng;
+                    var ignition = 'off';
+                    //console.log(value.timestamp > DateTimeOffSet.Now() - 100000);
+                    //if (value.timestamp > DateTimeOffSet.Now() - 100000) {
+                    //    ignition = 'on';
+                    //}
+                    var marker = markersArray[driver_id];
+                    if (marker == null) {
+                        image.url = '../img/car_' + ignition + '_0.png';
+                        markersArray[driver_id] = new google.maps.Marker({
+                            draggable: false,
+                            animation: google.maps.Animation.DROP,
+                            position: new google.maps.LatLng(lat, lng, false),
+                            title: driver_id,
+                            icon: image,
+                            map: map
+                        });
+                        google.maps.event.addListener(markersArray[driver_id], 'click', function () {
+                            infoWindowArray[driver_id].close();
+                            infoWindowArray[driver_id].open(map, markersArray[driver_id]);
+                            findMarker(vehicle_id);
+                        });
+                        google.maps.event.addListener(markersArray[driver_id], 'mouseover', function (e) {
+
+                        });
+                        //var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + value.vVehicleStatus.lat + "," + value.vVehicleStatus.lng + "&key=AIzaSyBekDgS4qXKqCkeO5APg7jZCx17ToX4Mvk";
+                        //jQuery.getJSON(url, function (json) {
+                        //    if (json["results"].length > 0) {
+                        //        infoWindowArray[vehicle_id] = new google.maps.InfoWindow({
+
+                        //            content: '<table><tr><td><b>License Number</b></td><td style="padding:0px 5px 0px 5px">:</td><td> ' + value.vehicle.lic_no + ' </td></tr></table>'
+                        //        });
+                        //        infoWindowArray[vehicle_id].open(map, markersArray[vehicle_id]);
+                        //    }
+                        //});
+                    }
+                    else {
+                        //var directionsService = new google.maps.DirectionsService();
+                        //var item_latlng = new google.maps.LatLng(lat, lng);
+                        //directionsService.route({ origin: item_latlng, destination: item_latlng, travelMode: google.maps.DirectionsTravelMode.DRIVING }, function (response, status) {
+                        //    if (status == google.maps.DirectionsStatus.OK) {
+                        //        //marker.setPosition(response.routes[0].legs[0].start_location);
+                        //        marker.animateTo(response.routes[0].legs[0].start_location);
+                        //    }
+                        //    else {
+                        //        //marker.setPosition(new google.maps.LatLng(lat, lng));
+                        //    }
+                        //});
+                        //image.url = '../img/car_' + ignition + '_' + closest_direction + '.png';
+                        //marker.setIcon(image);
+                        //getDirection(marker.getPosition(), new google.maps.LatLng(lat, lng));
+                        marker.animateTo(new google.maps.LatLng(lat, lng));
+                        //console.log('Direction of ' + marker.title + ' ' + closest_direction + ' ' + direction + ' , URL : ' + '../img/car_' + ignition + '_' + closest_direction + '.png');
+                    }
+                })
+            },
+            error: function () {
+            }
+        })
+    }, 2000)
+
+    function smoothZoomTo() {
+        if (map.getZoom() < 15) {
+            map.setZoom(map.getZoom() + 1);
+            setTimeout(function () { smoothZoomTo(); }, 50);
+        }
+    }
+
+    function getDirection() {
+        var heading = google.maps.geometry.spherical.computeHeading(arguments[0], arguments[1]);
+    }
+
+    function getScrollBarWidth() {
+        var inner = document.createElement('p');
+        inner.style.width = "100%";
+        inner.style.height = "200px";
+
+        var outer = document.createElement('div');
+        outer.style.position = "absolute";
+        outer.style.top = "0px";
+        outer.style.left = "0px";
+        outer.style.visibility = "hidden";
+        outer.style.width = "200px";
+        outer.style.height = "150px";
+        outer.style.overflow = "hidden";
+        outer.appendChild(inner);
+
+        document.body.appendChild(outer);
+        var w1 = inner.offsetWidth;
+        outer.style.overflow = 'scroll';
+        var w2 = inner.offsetWidth;
+        if (w1 == w2) w2 = outer.clientWidth;
+
+        document.body.removeChild(outer);
+        alert(w1 - w2);
+        return (w1 - w2);
+    };
+</script>
+
+<div class="side-body padding-top">
+    <div id="wrapper" style="position:relative" class="col-md-9">
+        <div id="dvMap" style="width:100%;position:relative; height: 500px">
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <h3 id="output" name="output" style="width:100%;background-color:#22A7F0;margin:0px;padding:10px">Driver List</h3>
+        <input type="text" name="filter" id="filter" onkeyup="filterMarker()" style="width:100%;padding:10px;margin:10px 0px 10px 0px" placeholder="Filter By Driver ID" />
+
+        <div id="vehicle_list" name="vehicle_list" style="overflow:auto;height:400px">
+            
+        </div>
+    </div>
+</div>

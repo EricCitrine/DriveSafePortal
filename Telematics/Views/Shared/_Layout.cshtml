@@ -132,23 +132,51 @@
                                 var className = Request.Path == "/" && Request.QueryString.Count == 0 ? "active" : "";
                             }
                             <li class="@className">
-                                <a href="/Dashboard/Index">
-                                    <span class="icon fa fa-th-large"></span><span class="title">Dashboard</span>
-                                </a>
+                                @if (User.Identity.Name == "davidtan@citrine.sg")
+                                {
+                                    <a href="/Dashboard/Track">
+                                        <span class="icon fa fa-th-large"></span><span class="title">Dashboard</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="/Dashboard/Index">
+                                        <span class="icon fa fa-th-large"></span><span class="title">Dashboard</span>
+                                    </a>
+                                }
                             </li>
-                            @if (!User.IsInRole("Driver")) { 
+                            @if (User.Identity.Name == "davidtan@citrine.sg")
+                            {
+                                <li class="@className">
+                                    <a href="/Dashboard/Scoring">
+                                        <span class="icon fa fa-users"></span><span class="title">Drivers Score</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (!User.IsInRole("Driver")) {
+                                if(User.Identity.Name != "davidtan@citrine.sg")
+                                { 
                                 <li class="@className">
                                     <a href="/Account/Management">
                                         <span class="icon fa fa-users"></span><span class="title">Account Management</span>
                                     </a>
                                 </li>
-                            }
+                                    }
+                                }
+                            @if (User.Identity.Name != "davidtan@citrine.sg")
+                            {
                             <li class="@className">
                                 <a href="/Account/Vehicles">
                                     <span class="icon fa fa-car"></span><span class="title">Vehicle Management</span>
                                 </a>
                             </li>
-                            @Html.Action("Reports", "Dashboard")
+                            @*<li class="@className">
+                                <a href="/Dashboard/Report?id=4463e7da-1fbe-483e-8aaf-c5b906a48bf7">
+                                    <span class="icon fa fa-car"></span><span class="title">Report</span>
+                                </a>
+                            </li>*@
+                            @Html.Action("Reports", "Dashboard") 
+                            }
                         </ul>
                     </div>
                     <!-- /.navbar-collapse -->

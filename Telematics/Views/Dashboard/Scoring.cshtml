@@ -1,0 +1,131 @@
+﻿@model Telematics.Models.ScoreViewModel
+@section Breadcrumbs{
+    <ol class="breadcrumb navbar-breadcrumb">
+        <li>Driver's Score List</li>
+    </ol>
+}
+<link rel="stylesheet" type="text/css" href="../lib/css/Dashboard.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script type="text/javascript">
+
+    function getScrollBarWidth() {
+        var inner = document.createElement('p');
+        inner.style.width = "100%";
+        inner.style.height = "200px";
+
+        var outer = document.createElement('div');
+        outer.style.position = "absolute";
+        outer.style.top = "0px";
+        outer.style.left = "0px";
+        outer.style.visibility = "hidden";
+        outer.style.width = "200px";
+        outer.style.height = "150px";
+        outer.style.overflow = "hidden";
+        outer.appendChild(inner);
+
+        document.body.appendChild(outer);
+        var w1 = inner.offsetWidth;
+        outer.style.overflow = 'scroll';
+        var w2 = inner.offsetWidth;
+        if (w1 == w2) w2 = outer.clientWidth;
+
+        document.body.removeChild(outer);
+        alert(w1 - w2);
+        return (w1 - w2);
+    };
+
+    function driverDetails()
+    {
+        //var form = document.createElement("form");
+        //form.setAttribute("method", "post");
+        //form.setAttribute("action", "Index");
+
+        //// setting form target to a window named 'formresult'
+        //form.setAttribute("target", "Index");
+
+        //var hiddenField = document.createElement("input");              
+        //hiddenField.setAttribute("name", "id");
+        //hiddenField.setAttribute("value", "bob");
+        //form.appendChild(hiddenField);
+        //document.body.appendChild(form);
+        //form.submit();
+        window.location.href = "../Dashboard/Details?driver="+arguments[0];
+        //alert(arguments[0]);
+    }
+</script>
+
+<div class="side-body padding-top">
+
+    <div class="row">
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <a href="#" onclick="filter(a)">
+                <div class="card green summary-inline">
+                    <div class="card-body">
+                        <div class="content" style="float:left;width:100%">
+                            <div class="title" style="float:left;text-align:center">Grade A</div>
+                        </div>
+                        <div class="content"style="float:right;width:100%">
+                            <div class="title">@Model.gradeA</div>
+                            <div class="sub-title">Drivers</div>
+                        </div>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <a href="#" onclick="filter(b)">
+                <div class="card yellow summary-inline">
+                    <div class="card-body">
+                        <div class="content" style="float:left;width:100%">
+                            <div class="title" style="float:left;text-align:center">Grade B</div>
+                        </div>
+                        <div class="content" style="float:right;width:100%">
+                            <div class="title">@Model.gradeB</div>
+                            <div class="sub-title">Drivers</div>
+                        </div>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
+            <a href="#" onclick="filter(c)">
+                <div class="card red summary-inline">
+                    <div class="card-body">
+                        <div class="content" style="float:left;width:100%">
+                            <div class="title" style="float:left;text-align:center">Grade C</div>
+                        </div>
+                        <div class="content" style="float:right;width:100%">
+                            <div class="title">@Model.gradeC</div>
+                            <div class="sub-title">Drivers</div>
+                        </div>
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-12 col-md-6 col-sm-6 col-xs-12">
+            <table class="scroll2">
+                <thead>
+                    <tr>
+                        <th>Driver</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="vehicle_list_details">
+
+                    @foreach (var score in Model.scores)
+            {
+                        <text>
+                            <tr onclick="driverDetails('@score.driver')">
+                                <td>@score.driver</td>
+                                <td>@score.getAvgScore()</td>
+                            </tr>
+                        </text>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>

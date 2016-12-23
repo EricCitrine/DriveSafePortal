@@ -29,14 +29,149 @@ table.scroll tr:after {  /* clearing float */
 table.scroll tbody {
     height: 300px;
     overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-x: scroll;
     font-size: 12px;
 }
 
-table.scroll tbody td, thead th {
-    width: 20%;  /* 19% is less than (100% / 5 cols) = 20% */
+table.scroll tbody td, table.scroll thead th {
+    width: 18%;  /* 19% is less than (100% / 5 cols) = 20% */
     height: 50px;
     float: left;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
     padding: 10px;
 }
+
+
+table.scroll2 {
+    width: 100%;
+    border-spacing: 0;
+}
+
+table.scroll2 thead tr {
+    /* fallback */
+    width: 96%;
+    /* minus scroll bar width */
+    width: -webkit-calc(100% - 23px);
+    width:    -moz-calc(100% - 23px);
+    width:         calc(100% - 23px);
+    background-color: #22A7F0;
+    font-size: 24px;
+}
+
+table.scroll2 tr:after {  /* clearing float */
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+table.scroll2 tbody {
+    height: 400px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    font-size: 20px;
+}
+
+table.scroll2 tbody tr {
+    background: #1ABC9C;
+}
+
+table.scroll2 tbody td, table.scroll2 thead th {
+    width: 50%;  /* 19% is less than (100% / 5 cols) = 20% */
+    height: 50px;
+    float: left;
+    border-bottom: 1px solid black;
+    padding: 10px;
+}
+
+table.scroll2 tbody tr:hover {
+    background: #ffffff;
+    cursor : pointer;
+}
+
+
+table.scroll3 {
+    width: 100%;
+    border-spacing: 0;
+}
+
+table.scroll3 thead tr {
+    /* fallback */
+    width: 96%;
+    /* minus scroll bar width */
+    width: -webkit-calc(100% - 23px);
+    width:    -moz-calc(100% - 23px);
+    width:         calc(100% - 23px);
+    background-color: #22A7F0;
+    font-size: 20px;
+}
+
+table.scroll3 tr:after {  /* clearing float */
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+table.scroll3 tbody {
+    height: 500px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    font-size: 20px;
+    background: #1ABC9C;
+}
+
+table.scroll3 tbody td,table.scroll3 thead th {
+    width: 10%;  /* 19% is less than (100% / 5 cols) = 20% */
+    height: 100px;
+    float: left;
+    border-bottom: 1px solid black;
+    padding: 10px;
+    text-align: center;
+}
+
+table.scroll3 tbody tr:hover {
+    background: #ffffff;
+    cursor : pointer;
+}
+
+
+table.stats {
+    width: 100%;
+    border-spacing: 0;
+}
+
+table.stats thead, tbody, tr, th, td { display: block; }
+
+table.stats thead tr {
+    /* fallback */
+    width: 100%;
+    background-color: #ebf782;
+    font-size: 20px;
+}
+
+table.stats tr:after {  /* clearing float */
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+table.stats tbody {
+    height: 150px;
+    font-size: 22px;
+    background-color: #b7ffdc;
+}
+
+table.stats tbody td, table.stats thead th {
+    width: 100%;  /* 19% is less than (100% / 5 cols) = 20% */
+    height: 75px;
+    float: left;
+    text-align: center;
+    padding: 10px;
+}
+
+/*table.stats tbody tr:hover {
+    //background: #ffffff;
+    cursor : pointer;
+}*/

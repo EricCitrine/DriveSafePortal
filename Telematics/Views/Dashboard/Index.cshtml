@@ -12,6 +12,7 @@
     var map;
     var markersArray = [];
     var infoWindowArray = [];
+    var checked = [];
     var opt = { minZoom: 6, maxZoom: 9 };
     var image;
     var angles = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360];
@@ -48,9 +49,9 @@
             if (float.Parse(item.vVehicleStatus.lat) != 0) {
             <text>
                 infoWindowArray['@item.vehicle.device_no'] = new google.maps.InfoWindow({
-                    content: '<table><tr><td><b>License Number</b></td><td style="padding:0px 5px 0px 5px">:</td><td> @item.vehicle.lic_no </td></tr></table>'
+                    content: '<table><tr><td> @item.vehicle.lic_no </td></tr></table>'
                 });
-
+                checked['@item.vehicle.device_no'] = true;
                 markersArray['@item.vehicle.device_no'] = new google.maps.Marker({
                     draggable: false,
                     animation: google.maps.Animation.DROP,
@@ -75,16 +76,16 @@
 
         var trafficLayer = new google.maps.TrafficLayer();
         trafficLayer.setMap(map);
-        filterMarker();
         initializeMarkers();
+        //filterMarker();
     }
     var filter_text;
     function filterMarker() {
 
-        var v_list = document.getElementById('vehicle_list');
-        v_list.innerHTML = '<input type="checkbox" id="selectall" name="selectall" style="float:left" onclick="checkAll()" /><p style="padding-left:20px;cursor: pointer">Select All</p>';
+        //var v_list = document.getElementById('vehicle_list');
+        //v_list.innerHTML = '<input type="checkbox" id="selectall" name="selectall" style="float:left" onclick="checkAll()" /><p style="padding-left:20px;cursor: pointer">Select All</p>';
         var v_detail_list = document.getElementById('vehicle_list_details');
-        v_detail_list.innerHTML = "";
+        //v_detail_list.innerHTML = "";
 
         filter_text = $('#filter').val();
         @foreach(var g in Model.gps_location_list)
@@ -92,8 +93,16 @@
         <text>
         var vid = '@g.vehicle.lic_no';
         if (vid.includes(filter_text)) {
-            v_list.innerHTML += '<input type="checkbox" id=\"' + '@g.vehicle.device_no' + '\" name=\"' + '@g.vehicle.device_no' + '\" style="float:left" onclick="trackMarker(\'' + '@g.vehicle.device_no' + '\')" /><p class="vehiclelist" onclick="findMarker(\'' + '@g.vehicle.device_no' + '\')" style="padding-left:20px;cursor: pointer"><u> @g.vehicle.lic_no </u></p>';
-            v_detail_list.innerHTML += '<tr><td>' + '@g.vehicle.lic_no' + '</td><td>UNDEFINED</td><td>' + '@g.vVehicleStatus.alarm' + ' ( '+'@g.vVehicleStatus.alarm_time '+' )</td><td>' + '@g.vVehicleStatus.time_stamp' + '</td><td>' + '@g.vVehicleStatus.ignition' + '</td></tr>';
+            //v_list.innerHTML += '<input type="checkbox" id=\"' + '@g.vehicle.device_no' + '\" name=\"' + '@g.vehicle.device_no' + '\" style="float:left" onclick="trackMarker(\'' + '@g.vehicle.device_no' + '\')" /><p class="vehiclelist" onclick="findMarker(\'' + '@g.vehicle.device_no' + '\')" style="padding-left:20px;cursor: pointer"><u> @g.vehicle.lic_no </u></p>';
+            //v_detail_list.innerHTML += '<tr id=\"' + '@g.vehicle.id' + '\" name=\"' + '@g.vehicle.id' + '\"><td style="width:10%"><input type="checkbox" id=\"' + '@g.vehicle.device_no' + '\" name=\"' + '@g.vehicle.device_no' + '\" style="float:left" onclick="trackMarker(\'' + '@g.vehicle.device_no' + '\')" /></td><td>' + '@g.vehicle.lic_no' + '</td><td>' + '@g.vVehicleStatus.speed' + '</td><td>' + '@g.vVehicleStatus.alarm' + ' ( ' + '@g.vVehicleStatus.alarm_time ' + ' )</td><td>' + '@g.vVehicleStatus.time_stamp' + '</td><td>' + '@g.vVehicleStatus.ignition' + '</td></tr>';
+
+            document.getElementById('@g.vehicle.device_no tr').style.display = "block";
+            if (checked['@g.vehicle.device_no'] == true) {
+                document.getElementById('@g.vehicle.device_no').checked = true;
+            }
+        }
+        else {
+            document.getElementById('@g.vehicle.device_no tr').style.display = "none";
         }
         </text>
         }
@@ -106,9 +115,11 @@
             <text>
                 if(cAll.checked){
                     document.getElementById('@g.vehicle.device_no').checked = true;
+                    checked['@g.vehicle.device_no'] = true;
                 }
                 else {
                     document.getElementById('@g.vehicle.device_no').checked = false;
+                    checked['@g.vehicle.device_no'] = false;
                 }
                 trackMarker('@g.vehicle.device_no');
             </text>
@@ -117,10 +128,14 @@
 
     function initializeMarkers() {
         document.getElementById('selectall').checked = true;
+        var v_detail_list = document.getElementById('vehicle_list_details');
+
         @foreach(var g in Model.gps_location_list)
         {
             <text>
-                document.getElementById('@g.vehicle.device_no').checked = true;
+        v_detail_list.innerHTML += '<tr id=\"' + '@g.vehicle.device_no tr' + '\" name=\"' + '@g.vehicle.device_no tr' + '\"><td style="width:10%"><input type="checkbox" checked id=\"' + '@g.vehicle.device_no' + '\" name=\"' + '@g.vehicle.device_no' + '\" style="float:left" onclick="trackMarker(\'' + '@g.vehicle.device_no' + '\')" /></td><td>' + '@g.vehicle.lic_no' + '</td><td id=\"' + '@g.vehicle.device_no ts' + '\" name=\"' + '@g.vehicle.device_no ts' + '\">' + '@g.vVehicleStatus.time_stamp' + '</td><td id=\"' + '@g.vehicle.device_no ig' + '\" name=\"' + '@g.vehicle.device_no ig' + '\">' + '@g.vVehicleStatus.ignition' + '</td><td id=\"' + '@g.vehicle.device_no spd' + '\" name=\"' + '@g.vehicle.device_no spd' + '\">' + '@g.vVehicleStatus.speed' + '</td><td id=\"' + '@g.vehicle.device_no al' + '\" name=\"' + '@g.vehicle.device_no al' + '\">' + '@g.vVehicleStatus.alarm' + ' ( ' + '@g.vVehicleStatus.alarm_time ' + ' )</td></tr>';
+
+                checked['@g.vehicle.device_no'] = true;
             </text>
         }
     }
@@ -129,9 +144,11 @@
         var veh = document.getElementById(arguments[0]);
         if (veh.checked) {
             markersArray[arguments[0]].setMap(map);
+            checked[arguments[0]] = true;
         }
         else {
             markersArray[arguments[0]].setMap(null);
+            checked[arguments[0]] = false;
         }
     }
 
@@ -159,9 +176,16 @@
                     var id = value.vVehicleStatus.id;
                     var vehicle_id = value.vVehicleStatus.vehicle_id;
                     var time_stamp = new Date(parseInt(value.vVehicleStatus.time_stamp.substr(6))).toLocaleString();
+                    var alarm_time = new Date(parseInt(value.vVehicleStatus.alarm_time.substr(6))).toLocaleString();
                     var lat = value.vVehicleStatus.lat;
                     var lng = value.vVehicleStatus.lng;
                     var ignition = 'off';
+
+                    document.getElementById(vehicle_id + " ts").innerHTML = time_stamp;
+                    document.getElementById(vehicle_id + " ig").innerHTML = value.vVehicleStatus.ignition;
+                    document.getElementById(vehicle_id + " spd").innerHTML = value.vVehicleStatus.speed;
+                    document.getElementById(vehicle_id + " al").innerHTML = value.vVehicleStatus.alarm + " ( " + alarm_time + " ) ";
+
                     if (value.vVehicleStatus.ignition == "Ignition On" || value.vVehicleStatus.ignition == "Login") {
                         ignition = 'on'
                     }
@@ -270,27 +294,28 @@
 </script>
 
 <div class="side-body padding-top">
-    <div id="wrapper" style="position:relative" class="col-md-9">
+    <div id="wrapper" style="position:relative; width:100%; height:500px">
         <div id="dvMap" style="width:100%;position:relative; height: 500px">
         </div>
     </div>
 
-    <div class="col-md-3">
-        <h3 id="output" name="output" style="width:100%;background-color:#22A7F0;margin:0px;padding:10px">Vehicle List</h3>
+    <div style="width:100%">
+        <h3 id="output" name="output" style="width:100%;background-color:#22A7F0;margin-top:10px;padding:10px">Vehicle List</h3>
         <input type="text" name="filter" id="filter" onkeyup="filterMarker()" style="width:100%;padding:10px;margin:10px 0px 10px 0px" placeholder="Filter By License Number" />
 
-        <div id="vehicle_list" name="vehicle_list" style="overflow:auto;height:400px">
+        @*<div id="vehicle_list" name="vehicle_list" style="overflow:auto;height:400px">
             
-        </div>
+        </div>*@
     </div>
         <table class="scroll">
             <thead>
                 <tr>
-                    <th>Vehicle No.</th>
+                    <th style="width:10%"><input type="checkbox" id="selectall" name="selectall" style="float:left" onclick="checkAll()" /></th>
+                    <th>License No.</th>
+                    <th>Last Updated</th>
                     <th>Vehicle State</th>
-                    <th>Alarm</th>
-                    <th>Received At</th>
-                    <th>Ignition</th>
+                    <th>Speed (KM/H)</th>
+                    <th>Last Alarm</th>
                 </tr>
             </thead>
             <tbody id="vehicle_list_details">

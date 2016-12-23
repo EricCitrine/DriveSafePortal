@@ -31,6 +31,8 @@ namespace Telematics.Models
         public System.Data.Entity.DbSet<Telematics.Models.DriverScore> DriverScore { get; set; }
         public System.Data.Entity.DbSet<Telematics.Models.Companie> Companie { get; set; }
         public System.Data.Entity.DbSet<Telematics.Models.VehicleStatus> VehicleStatus { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.Trips> Trips { get; set; }
+        public System.Data.Entity.DbSet<Telematics.Models.Drivers_GPSData> Drivers_GPSData { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

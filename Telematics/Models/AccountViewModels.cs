@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
@@ -10,6 +11,99 @@ namespace Telematics.Models
         public ApplicationUser user;
         public Companie company;
     }
+
+    public class ScoreViewModel
+    {
+        public List<ScoreList> scores;
+        public int gradeA;
+        public int gradeB;
+        public int gradeC;
+    }
+
+    public class TrackViewModel
+    {
+        public List<Drivers_GPSData> drivergps;
+    }
+
+    public class DetailsViewModel
+    {
+        public List<Trips> trips;
+        public string driver;
+        public double getTotalScore()
+        {
+            var totalScore = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalScore += t.score;
+            }
+            return Math.Round(totalScore / trips.Count, 2);
+        }
+        public double getTotalHardAcceleration()
+        {
+            var totalHardAcceleration = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalHardAcceleration += t.hardAccelerations;
+            }
+            return totalHardAcceleration;
+        }
+        public double getTotalHardStop()
+        {
+            var totalHardStop = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalHardStop += t.hardStops;
+            }
+            return totalHardStop;
+        }
+        public double getTotalHardTurn()
+        {
+            var totalHardTurn = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalHardTurn += t.hardTurns;
+            }
+            return totalHardTurn;
+        }
+        public double getTotalDistance()
+        {
+            var totalDistance = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalDistance += t.distance;
+            }
+            return Math.Round(totalDistance / 1000, 2);
+        }
+        public double getTotalDuration()
+        {
+            var totalDuration = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalDuration += t.duration;
+            }
+            return Math.Round(totalDuration / 60, 2);
+        }
+        public double getTotalSpeeding()
+        {
+            var totalSpeeding = 0.0;
+            foreach(Trips t in trips)
+            {
+                if(t.maxSpeed > 80)
+                totalSpeeding += 1;
+            }
+            return Math.Round(totalSpeeding, 2);
+        }
+        public double getTotalPhoneUsage()
+        {
+            var totalPhoneUsage = 0.0;
+            foreach(Trips t in trips)
+            {
+                totalPhoneUsage += t.phoneUsage;
+            }
+            return Math.Round(totalPhoneUsage, 2);
+        }
+    }
+
     public class ExternalLoginConfirmationViewModel
     {
         [Required]

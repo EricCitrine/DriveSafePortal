@@ -413,6 +413,9 @@
     <Content Include="Views\Account\VehicleRegister.cshtml" />
     <Content Include="Views\Account\EditVehicle.cshtml" />
     <Content Include="Views\Account\Profile.cshtml" />
+    <Content Include="Views\Dashboard\Scoring.cshtml" />
+    <Content Include="Views\Dashboard\Details.cshtml" />
+    <Content Include="Views\Dashboard\Track.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -453,7 +456,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>20207</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:20207/</IISUrl>
+          <IISUrl>http://localhost:27017/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -10,6 +10,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Telematics.Models;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Web.Configuration;
 
 namespace Telematics.Controllers
 {
@@ -539,7 +541,27 @@ namespace Telematics.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    //using (var db = new ApplicationDbContext())
+                    //{
+                    //    var current_company = (from c in db.Companie
+                    //                           join u in db.Users on c.name equals u.Company
+                    //                           where u.UserName == User.Identity.Name
+                    //                           select c).FirstOrDefault();
+                    //    Configuration config = WebConfigurationManager.OpenWebConfiguration(System.Web.HttpContext.Current.Request.ApplicationPath);
+                    //    config.AppSettings.Settings.Remove("powerbi:WorkspaceId");
+                    //    config.AppSettings.Settings.Add("powerbi:WorkspaceId", current_company.reportID);
+                    //    config.Save();
+                    //}
+
+
+                    if (model.Email == "davidtan@citrine.sg")
+                    {
+                        return RedirectToAction("Track", "Dashboard");
+                    }
+                    else
+                    {
+                        return RedirectToAction("index", "Dashboard");
+                    }
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -630,6 +652,7 @@ namespace Telematics.Controllers
                     var list = (from r in appdb.Roles
                                 where r.Name != "Super"
                                 && r.Name != "Admin"
+                                && r.Name != "Insurer"
                                 select new SelectListItem() { Text = r.Name, Value = r.Name }
                                  ).ToList();
                     foreach (SelectListItem item in list)
@@ -639,6 +662,16 @@ namespace Telematics.Controllers
                             item.Selected = true;
                         }
                     }
+                    ViewBag.SelectList = list;
+                }
+            }
+            else
+            {
+                using (var appdb = new ApplicationDbContext())
+                {
+                    var list = (from r in appdb.Roles
+                                select new SelectListItem() { Text = r.Name, Value = r.Name }
+                                ).ToList();
                     ViewBag.SelectList = list;
                 }
             }

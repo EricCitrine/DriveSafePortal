@@ -15,6 +15,80 @@ namespace Telematics.Models
         public string lng { get; set; }
     }
 
+    public class Trips
+    {
+        public string id { get; set; }
+        public string driver { get; set; }
+        public Double distance { get; set; }
+        public Double duration { get; set; }
+        public Double hardAccelerations { get; set; }
+        public Double hardStops { get; set; }
+        public Double hardTurns { get; set; }
+        public Double speeding = 0;
+        public Double phoneUsage = 0;
+        public DateTimeOffset timeStamp { get; set; }
+        public DateTimeOffset createdAt { get; set; }
+        public DateTimeOffset updatedAt { get; set; }
+        public Boolean deleted { get; set; }
+        public Double maxSpeed { get; set; }
+        public Double score { get; set; }
+        public string getDistance()
+        {
+            return (distance / 1000).ToString("#.##");
+        }
+        public string getDuration()
+        {
+            return (duration / 60).ToString("#.##");
+        }
+        public Double getSpeeding()
+        {
+            if(maxSpeed > 80)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+
+    public class DriverGPS
+    {
+        public string driverid { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+        public DateTimeOffset timeStamp { get; set; }
+    }
+
+    public class Drivers_GPSData
+    {
+        public string id { get; set; }
+        public string driverid { get; set; }
+        public double latitude { get; set; }
+        public double longitude { get; set; }
+        public DateTimeOffset timeStamp { get; set; }
+
+    }
+
+    public class ScoreList
+    {
+        public string driver { get; set; }
+        public double score { get; set; }
+        public int count { get; set; }
+        public double getAvgScore()
+        {
+            return Math.Round(score / count, 2);
+        }
+    }
+
+    public class DriverDetails
+    {
+        public List<Trips> trips { get; set; }
+        public int AvgHardAcceleration { get;set; }
+
+    }
+
     public class VehicleGPS
     {
         public VehicleStatus vVehicleStatus { get; set; }
@@ -76,5 +150,6 @@ namespace Telematics.Models
         public string name { get; set; }
         [Display(Name = "Company Code")]
         public string code { get; set; }
+        public string reportID { get; set; }
     }
 }
